@@ -10,6 +10,14 @@ const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
   client.connect()
+    .then(() => {
+        const query = {
+            text: 'INSERT INTO hellotable (name) VALUES ($1)',
+            values: ['Inserting into the db works!']
+        }
+
+        return client.query(query)
+    })
     .then(() => client.query('SELECT * FROM hellotable'))
     .then((result) => {
       res.end(`${result.rows[1].name}\n`);
