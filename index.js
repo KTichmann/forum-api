@@ -4,10 +4,10 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 const md5 = require('md5');
-
+const jwt    = require('jsonwebtoken');
 const PORT = process.env.PORT || 5000
-const { DATABASE_URL } = process.env;
-
+const { DATABASE_URL, SECRET } = process.env;
+const middleware = require('./middleware')
 const client = new Client({
     connectionString: DATABASE_URL
 });
@@ -19,14 +19,16 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 
 client.connect().catch(err => console.log(err.toString()))
 
-app.get('/', (req, res) => {
-    client.query('SELECT * FROM hellotable')
-    .then((result) => {
-      res.send(`${result.rows[1].name}\n`);
-    })
-    .catch((err) => {
-      res.send(err.toString());
-    });
+app.get('/', middleware.checkToken, (req, res) => {
+
+    res.send("successful tokenization!")
+    // client.query('SELECT * FROM hellotable')
+    // .then((result) => {
+    //   res.send(`${result.rows[1].name}\n`);
+    // })
+    // .catch((err) => {
+    //   res.send(err.toString());
+    // });
 })
 
 app.post('/sign-up', (req, res) => {
@@ -56,6 +58,26 @@ app.post('/sign-up', (req, res) => {
             res.send(`name: ${username}, pass: ${req.body.password}`);
         })
         .catch((error) => res.send(error.toString()))
+})
+
+app.post('/authenticate', (req, res) => {
+    //Check if username/password are in the database - if not, throw an error
+    //Check if username/password are correct - if not throw an error
+    //Create a jwt token, and send back in response
+    const username = req.body.username;
+    const payload = {
+        username: username
+    };
+
+    const token = jwt.sign(payload, SECRET, {
+        expiresIn: '24h'
+    });
+
+    res.json({
+        success: true,
+        message: 'Authentication Successful',
+        token: token
+    })
 })
 
 app.listen(process.env.PORT, () => {
