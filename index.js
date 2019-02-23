@@ -3,8 +3,12 @@ const bodyParser = require('body-parser')
 const app = express();
 const PORT = process.env.PORT || 5000
 
-const handleExports = require('./handlers');
-const handlers = handleExports.handlers;
+const userHandleExports = require('./handlers/UserHandler');
+const userHandler = userHandleExports.userHandler;
+
+const postHandlerExports = require('./handlers/PostHandler');
+const postHandler = postHandlerExports.postHandler;
+
 const middleware = require('./middleware');
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
@@ -12,12 +16,17 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
+app.get('/', middleware.checkToken, userHandler.index);
 
-app.get('/', middleware.checkToken, handlers.index)
+//User-related routes
+app.post('/sign-up', userHandler.signUp);
 
-app.post('/sign-up', handlers.signUp)
+app.post('/authenticate', userHandler.authenticate);
 
-app.post('/authenticate', handlers.authenticate)
+//Post-related routes
+app.get('/posts', postHandler.listPosts);
+
+app.post('/posts/create', middleware.checkToken, postHandler.createPost);
 
 app.listen(process.env.PORT, () => {
     console.log(`running at port: ${PORT}`)

@@ -1,2 +1,2 @@
-create table hellotable (name text);
-insert into hellotable values ('Hello Database!');
+create table test (username varchar NOT NULL PRIMARY KEY, password varchar NOT NULL);
+create table posts (post_id SERIAL PRIMARY KEY, username varchar NOT NULL, post VARCHAR(1500) NOT NULL, title VARCHAR(100) NOT NULL, created_at timestamp without time zone default (now() at time zone 'utc'));

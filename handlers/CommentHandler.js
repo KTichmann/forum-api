@@ -1,0 +1,1 @@
+//comments --> comment & username & post_id & created_at

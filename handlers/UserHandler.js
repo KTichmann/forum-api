@@ -1,4 +1,3 @@
-const bodyParser = require('body-parser')
 const md5        = require('md5');
 const jwt        = require('jsonwebtoken');
 const { Client } = require('pg');
@@ -8,10 +7,11 @@ const client = new Client({
     connectionString: DATABASE_URL
 });
 
-class HandlerGenerator {
+class UserHandler {
     constructor(){
         client.connect().catch(err => console.log(err.toString()))
     }
+    //REMOVE
     index(req, res){
         let test = jwt.verify(req.headers['x-access-token'], SECRET, (err, decoded) => {
             return decoded;
@@ -61,7 +61,6 @@ class HandlerGenerator {
     authenticate(req, res) {
         //Check if username/password are in the database - if not, throw an error
         const username = req.body.username
-        const password = req.body.password
         //check if username is in database
         const query = {
             text: 'SELECT * FROM users WHERE username=$1',
@@ -69,11 +68,12 @@ class HandlerGenerator {
         };
         client.query(query)
             .then(result => {
+                const password = result.rows[0].password;
                 const row = result.rows[0];
                 if(row === undefined){
                     res.json({
                         success: false,
-                        message: 'authentication unsuccessful'
+                        message: 'authentication unsuccessful',
                     })
                 } else {
                     //Check if password is correct
@@ -107,7 +107,9 @@ class HandlerGenerator {
     }
 }
 
-const handlers = new HandlerGenerator()
+
+
+const userHandler = new UserHandler()
 module.exports = {
-    handlers: handlers
+    userHandler: userHandler
 }
