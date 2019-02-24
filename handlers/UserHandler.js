@@ -106,7 +106,8 @@ class UserHandler {
             .catch(err => res.send(err))
     }
 }
-
+//TODO
+//Add a change password section
 
 
 const userHandler = new UserHandler()

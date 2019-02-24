@@ -13,6 +13,8 @@ class PostHandler{
         client.connect().catch(err => console.log(err.toString()));
 
         this.createPost = this.createPost.bind(this);
+        this.editPost = this.editPost.bind(this);
+        this.deletePost = this.deletePost.bind(this);
     }
     listPosts(req, res){
         client.query('SELECT * FROM posts')
@@ -53,7 +55,7 @@ class PostHandler{
         }
 
         const createPostQuery = {
-            text: 'INSERT INTO posts (username, post, title) VALUES ($1, $2, $3)',
+            text: 'INSERT INTO posts (username, post, title) VALUES ($1, $2, $3) RETURNING post_id',
             values: [username, post, title]
         }
         client.query(userQuery)
@@ -69,7 +71,8 @@ class PostHandler{
                         .then(result => {
                             res.json({
                                 success: true,
-                                message: 'Post Saved'
+                                message: 'Post Saved',
+                                data: result.rows[0]
                             })
                         })
                         .catch(error => res.json({
@@ -85,13 +88,14 @@ class PostHandler{
     }
 
     editPost(req, res){
-        const username = getUsername(req);
+        const username = this.getUsername(req);
         const post = req.body.post;
+        const title = req.body.title;
         const postID = req.body.id;
 
         const updatePostQuery = {
-            text: 'UPDATE posts SET post=$1 WHERE post_id = $2',
-            values: [post, postID]
+            text: 'UPDATE posts SET post=$1, title=$2 WHERE post_id = $3',
+            values: [post, title, postID]
         };
 
         //Look up post id in the database
@@ -102,7 +106,7 @@ class PostHandler{
         //Check if username is the same as the current user
         client.query(postIDQuery)
             .then(result => {
-                if(result.rows[0] != username) {
+                if(result.rows[0].username != username) {
                     res.json({
                         success: false,
                         message: "current user can't update post"
@@ -113,16 +117,72 @@ class PostHandler{
                         .then(result => {
                             res.json({
                                 success: true,
-                                message: "post updated successfully"
+                                message: "post updated successfully",
                             })
                         })
-                        //TODO: CATCH BLOCK
+                        .catch(error => {
+                            res.json({
+                                success: false,
+                                message: "error updating post",
+                                data: error
+                            })
+                        })
                 }
             })
-            //TODO: CATCH BLOCK
-        //Update post in db
+            .catch(error => {
+                res.json({
+                    success: false,
+                    message: "error updating post",
+                    data: error
+                })
+            })
     }
 
+    deletePost(req,res) {
+        const username = this.getUsername(req);
+        const id = req.body.id;
+        //Make sure that the user that created the post is the one trying to delete it
+        const usernameQuery = {
+            text: 'SELECT username FROM posts WHERE post_id = $1',
+            values: [id]
+        };
+
+        const deleteQuery = {
+            text: 'DELETE FROM posts WHERE post_id = $1',
+            values: [id]
+        }
+
+        client.query(usernameQuery)
+            .then(result => {
+                if(result.rows[0].username === username){
+                    //Delete the post
+                    client.query(deleteQuery)
+                    .then(result => {
+                        res.json({
+                            success: true,
+                            message: 'post deleted successfully'
+                        })
+                    })
+                    .catch(error => {
+                        res.json({
+                            success: false,
+                            message: 'error deleting post'
+                        })
+                    })
+                } else {
+                    res.json({
+                        success: false,
+                        message: "current user can't delete post"
+                    })
+                }
+            })
+            .catch(error => {
+                res.json({
+                    success: false,
+                    message: "error deleting post"
+                })
+            })
+    }
     getUsername(req){
         let token = req.headers['x-access-token'] || req.headers['authorization'];
 
@@ -138,12 +198,6 @@ class PostHandler{
         return username;
     }
     //posts --> post_id & username & post & created_at
-
-    //Logged out users should be able to: 
-    //Get a list of all the posts
-    //Logged in Users should be able to:
-    //1. Make a new post
-    //2. Edit their own post
 };
 
 const postHandler = new PostHandler()

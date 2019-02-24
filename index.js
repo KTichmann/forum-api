@@ -19,17 +19,20 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 app.get('/', middleware.checkToken, userHandler.index);
 
 //User-related routes
-app.post('/sign-up', userHandler.signUp);
+app.post('/user/sign-up', userHandler.signUp);
 
-app.post('/authenticate', userHandler.authenticate);
+app.post('/user/authenticate', userHandler.authenticate);
 
 //Post-related routes
 app.get('/posts', postHandler.listPosts);
 
 app.post('/posts/create', middleware.checkToken, postHandler.createPost);
 
-app.post('/posts/edit', middleware.checkToken, postHandler.editPost)
+app.post('/posts/edit', middleware.checkToken, postHandler.editPost);
 
+app.post('/posts/delete', middleware.checkToken, postHandler.deletePost);
+
+//Spin up the server
 app.listen(process.env.PORT, () => {
     console.log(`running at port: ${PORT}`)
 })
