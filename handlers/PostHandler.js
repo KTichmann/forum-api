@@ -84,6 +84,45 @@ class PostHandler{
             }))
     }
 
+    editPost(req, res){
+        const username = getUsername(req);
+        const post = req.body.post;
+        const postID = req.body.id;
+
+        const updatePostQuery = {
+            text: 'UPDATE posts SET post=$1 WHERE post_id = $2',
+            values: [post, postID]
+        };
+
+        //Look up post id in the database
+        const postIDQuery = {
+            text: 'SELECT username FROM posts WHERE post_id = $1',
+            values: [req.body.id] 
+        }
+        //Check if username is the same as the current user
+        client.query(postIDQuery)
+            .then(result => {
+                if(result.rows[0] != username) {
+                    res.json({
+                        success: false,
+                        message: "current user can't update post"
+                    })
+                } else {
+                    //Update post in the database
+                    client.query(updatePostQuery)
+                        .then(result => {
+                            res.json({
+                                success: true,
+                                message: "post updated successfully"
+                            })
+                        })
+                        //TODO: CATCH BLOCK
+                }
+            })
+            //TODO: CATCH BLOCK
+        //Update post in db
+    }
+
     getUsername(req){
         let token = req.headers['x-access-token'] || req.headers['authorization'];
 
@@ -104,7 +143,7 @@ class PostHandler{
     //Get a list of all the posts
     //Logged in Users should be able to:
     //1. Make a new post
-    //2. 
+    //2. Edit their own post
 };
 
 const postHandler = new PostHandler()

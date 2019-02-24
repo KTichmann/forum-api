@@ -28,6 +28,8 @@ app.get('/posts', postHandler.listPosts);
 
 app.post('/posts/create', middleware.checkToken, postHandler.createPost);
 
+app.post('/posts/edit', middleware.checkToken, postHandler.editPost)
+
 app.listen(process.env.PORT, () => {
     console.log(`running at port: ${PORT}`)
 })
