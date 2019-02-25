@@ -15,6 +15,14 @@ Posts consist of:
  * CREATED_AT The date the post was created (timestamp without timezone - default now)
  * POST_ID auto-incremented primary key - post id
 
+ Logged out users have the ability to:
+ - See a list of posts
+ - See a particular post by id
+ Logged in users have the ability to:
+ - create a post
+ - delete any posts they created
+ - edit any posts they created
+
 ###Comments:
 Comments consist of:
 * Comment_id
@@ -22,3 +30,14 @@ Comments consist of:
 * Username of commenter - username
 * Id of the post it's on - post_id
 * date created - created_at
+
+ Logged out users have the ability to:
+ - View a list of comments on a post
+ Logged in users have the ability to:
+ - Add a comment to a post
+ - Edit any of their comments
+ - Delete any of their comments
+
+.env with local db route & secret key for encryption
+
+TODO: Document Routes - inputs & outputs

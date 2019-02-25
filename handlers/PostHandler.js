@@ -28,7 +28,8 @@ class PostHandler{
             .then(result => {
                 res.json({
                     success:true,
-                    message: result.rows
+                    message: 'Post retrieved successfully',
+                    data: result.rows
                 })
             })
             .catch(error => {
@@ -108,7 +109,7 @@ class PostHandler{
         //Look up post id in the database
         const postIDQuery = {
             text: 'SELECT username FROM posts WHERE post_id = $1',
-            values: [req.body.id] 
+            values: [postID] 
         }
         //Check if username is the same as the current user
         client.query(postIDQuery)
@@ -205,6 +206,8 @@ class PostHandler{
         return username;
     }
     //posts --> post_id & username & post & created_at
+    //TODO: Add 'likes' - logged in users can like a post etc.
+    //Users can only like a post once - maybe have a "likes" table --> post_id, number of likes, array of users who liked it...
 };
 
 const postHandler = new PostHandler()

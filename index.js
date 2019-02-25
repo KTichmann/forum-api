@@ -35,12 +35,17 @@ app.post('/posts/create', middleware.checkToken, postHandler.createPost);
 
 app.post('/posts/edit', middleware.checkToken, postHandler.editPost);
 
-app.post('/posts/delete', middleware.checkToken, postHandler.deletePost);
+app.delete('/posts/delete', middleware.checkToken, postHandler.deletePost);
 
 //Comment-related routes
 app.get('/comments/:id', commentHandler.listComments);
 
 app.post('/comments/create', middleware.checkToken, commentHandler.createComment);
+
+app.post('/comments/edit', middleware.checkToken, commentHandler.editComment);
+
+app.delete('/comments/delete', middleware.checkToken, commentHandler.deleteComment);
+
 //Spin up the server
 app.listen(process.env.PORT, () => {
     console.log(`running at port: ${PORT}`)
