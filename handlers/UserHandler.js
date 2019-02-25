@@ -7,6 +7,16 @@ const client = new Client({
     connectionString: DATABASE_URL
 });
 
+const { createLogger, format, transports } = require('winston');
+
+const logger = createLogger({
+  level: 'debug',
+  format: format.simple(),
+  // You can also comment out the line above and uncomment the line below for JSON format
+  // format: format.json(),
+  transports: [new transports.Console()]
+});
+
 class UserHandler {
     constructor(){
         client.connect().catch(err => console.log('connection error: ', err.toString()))
@@ -79,7 +89,6 @@ class UserHandler {
             text: 'SELECT password FROM users WHERE username = $1',
             values: [username]
         }
-        
         client.query(query)
             .then(result => {
                 const password = result.rows[0].password;
@@ -90,6 +99,10 @@ class UserHandler {
                         message: 'authentication unsuccessful'
                     })
                 } else {
+                    logger.debug(result)
+                    logger.debug(password)
+                    logger.debug(req.body.password)
+                    logger.debug(md5(req.body.password))
                     //Check if password is correct
                     if(password === md5(req.body.password)){
                         //password is correct
@@ -101,7 +114,7 @@ class UserHandler {
                         const token = jwt.sign(payload, SECRET, {
                             expiresIn: '24h'
                         });
-                        
+                        logger.debug('5')
                         res.json({
                             success: true,
                             message: 'Authentication Successful',
@@ -109,6 +122,7 @@ class UserHandler {
                         })
                     } else {
                         //send an error message
+                        logger.debug('6')
                         res.json({
                             success: false,
                             message: 'authentication unsuccessful',
