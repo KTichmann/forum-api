@@ -2,10 +2,19 @@ const md5        = require('md5');
 const jwt        = require('jsonwebtoken');
 const { Client } = require('pg');
 const { DATABASE_URL, SECRET } = process.env;
-const winston = require('winston')
 
 const client = new Client({
     connectionString: DATABASE_URL
+});
+
+const { createLogger, format, transports } = require('winston');
+
+const logger = createLogger({
+  level: 'debug',
+  format: format.simple(),
+  // You can also comment out the line above and uncomment the line below for JSON format
+  // format: format.json(),
+  transports: [new transports.Console()]
 });
 
 class UserHandler {
@@ -80,20 +89,20 @@ class UserHandler {
             text: 'SELECT password FROM users WHERE username = $1',
             values: [username]
         }
-        winston.log('1')
+        logger.debug('1')
         client.query(query)
             .then(result => {
-                winston.log('2')
+                logger.debug('2')
                 const password = result.rows[0].password;
                 const row = result.rows[0];
                 if(row === undefined){
-                    winston.log('3')
+                    logger.debug('3')
                     res.json({
                         success: false,
                         message: 'authentication unsuccessful'
                     })
                 } else {
-                    winston.log('4')
+                    logger.debug('4')
                     //Check if password is correct
                     if(password === md5(req.body.password)){
                         //password is correct
@@ -105,7 +114,7 @@ class UserHandler {
                         const token = jwt.sign(payload, SECRET, {
                             expiresIn: '24h'
                         });
-                        winston.log('5')
+                        logger.debug('5')
                         res.json({
                             success: true,
                             message: 'Authentication Successful',
@@ -113,7 +122,7 @@ class UserHandler {
                         })
                     } else {
                         //send an error message
-                        winston.log('6')
+                        logger.debug('6')
                         res.json({
                             success: false,
                             message: 'authentication unsuccessful',
