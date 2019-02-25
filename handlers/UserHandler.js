@@ -89,20 +89,20 @@ class UserHandler {
             text: 'SELECT password FROM users WHERE username = $1',
             values: [username]
         }
-        logger.debug('1')
         client.query(query)
             .then(result => {
-                logger.debug('2')
                 const password = result.rows[0].password;
                 const row = result.rows[0];
                 if(row === undefined){
-                    logger.debug('3')
                     res.json({
                         success: false,
                         message: 'authentication unsuccessful'
                     })
                 } else {
-                    logger.debug('4')
+                    logger.debug(result)
+                    logger.debug(password)
+                    logger.debug(req.body.password)
+                    logger.debug(req.body.password)
                     //Check if password is correct
                     if(password === md5(req.body.password)){
                         //password is correct
