@@ -102,7 +102,7 @@ class UserHandler {
                     logger.debug(result)
                     logger.debug(password)
                     logger.debug(req.body.password)
-                    logger.debug(req.body.password)
+                    logger.debug(md5(req.body.password))
                     //Check if password is correct
                     if(password === md5(req.body.password)){
                         //password is correct
