@@ -79,6 +79,7 @@ class UserHandler {
             text: 'SELECT password FROM users WHERE username = $1',
             values: [username]
         }
+        
         client.query(query)
             .then(result => {
                 const password = result.rows[0].password;
