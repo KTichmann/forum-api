@@ -9,7 +9,7 @@ const client = new Client({
 
 class UserHandler {
     constructor(){
-        client.connect().catch(err => console.log(err.toString()))
+        client.connect().catch(err => console.log('connection error: ', err.toString()))
     }
     //REMOVE
     index(req, res){
@@ -23,6 +23,18 @@ class UserHandler {
     signUp(req, res) {
             //Check if username is unique
             const username = req.body.username;
+            const password = req.body.password;
+            if(!username){
+                res.json({
+                    success: false,
+                    message: 'username cannot be empty'
+                })
+            } else if (!password){
+                res.json({
+                    success: false,
+                    message: 'password cannot be empty'
+                })
+            }
             const usernameQuery = {
                 text: 'SELECT username FROM users WHERE username = $1',
                 values: [username]
@@ -37,7 +49,7 @@ class UserHandler {
                         })
                     } else {
                         //Hash password
-                        const hashedPass = md5(req.body.password);
+                        const hashedPass = md5(password);
                         //Add password and username to database
                         const query = {
                             text: 'INSERT INTO users(username, password) VALUES ($1, $2)',
@@ -58,14 +70,15 @@ class UserHandler {
                 })
                 .catch(error => res.send(error.toString()))
     }
-    authenticate(req, res) {
+
+    authenticate (req, res) {
         //Check if username/password are in the database - if not, throw an error
         const username = req.body.username
         //check if username is in database
         const query = {
-            text: 'SELECT * FROM users WHERE username=$1',
+            text: 'SELECT password FROM users WHERE username = $1',
             values: [username]
-        };
+        }
         client.query(query)
             .then(result => {
                 const password = result.rows[0].password;
@@ -73,7 +86,7 @@ class UserHandler {
                 if(row === undefined){
                     res.json({
                         success: false,
-                        message: 'authentication unsuccessful',
+                        message: 'authentication unsuccessful'
                     })
                 } else {
                     //Check if password is correct
@@ -83,11 +96,11 @@ class UserHandler {
                         const payload = {
                             username: username
                         };
-                    
+                        
                         const token = jwt.sign(payload, SECRET, {
                             expiresIn: '24h'
                         });
-                    
+                        
                         res.json({
                             success: true,
                             message: 'Authentication Successful',
@@ -97,20 +110,29 @@ class UserHandler {
                         //send an error message
                         res.json({
                             success: false,
-                            message: 'authentication unsuccessful'
+                            message: 'authentication unsuccessful',
+                            data: result
                         })
                     }
-                    res.send("username exists")
+                    res.json({
+                        success: false,
+                        message: 'username exists'
+                    })
                 }
             })
-            .catch(err => res.send(err))
+            .catch(error => res.json({
+                success: false,
+                message: 'error authenticating user',
+                data: error
+            }))
     }
 }
 //TODO
 //Add a change password section
 
 
-const userHandler = new UserHandler()
+const userHandler = new UserHandler();
+
 module.exports = {
     userHandler: userHandler
 }

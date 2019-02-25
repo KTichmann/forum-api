@@ -17,7 +17,14 @@ class PostHandler{
         this.deletePost = this.deletePost.bind(this);
     }
     listPosts(req, res){
-        client.query('SELECT * FROM posts')
+        let query = 'SELECT * FROM posts';
+        if(req.params.id){
+            query = {
+                text: 'SELECT * FROM posts WHERE post_id = $1',
+                values: [req.params.id]
+            }
+        }
+        client.query(query)
             .then(result => {
                 res.json({
                     success:true,

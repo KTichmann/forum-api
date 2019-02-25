@@ -9,6 +9,9 @@ const userHandler = userHandleExports.userHandler;
 const postHandlerExports = require('./handlers/PostHandler');
 const postHandler = postHandlerExports.postHandler;
 
+const commentHandlerExports = require('./handlers/CommentHandler');
+const commentHandler = commentHandlerExports.commentHandler;
+
 const middleware = require('./middleware');
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
@@ -26,48 +29,19 @@ app.post('/user/authenticate', userHandler.authenticate);
 //Post-related routes
 app.get('/posts', postHandler.listPosts);
 
+app.get('/posts/:id', postHandler.listPosts);
+
 app.post('/posts/create', middleware.checkToken, postHandler.createPost);
 
 app.post('/posts/edit', middleware.checkToken, postHandler.editPost);
 
 app.post('/posts/delete', middleware.checkToken, postHandler.deletePost);
 
+//Comment-related routes
+app.get('/comments/:id', commentHandler.listComments);
+
+app.post('/comments/create', middleware.checkToken, commentHandler.createComment);
 //Spin up the server
 app.listen(process.env.PORT, () => {
     console.log(`running at port: ${PORT}`)
 })
-
-
-
-
-
-
-// const server = http.createServer((req, res) => {
-//   const client = new Client({
-//     connectionString: DATABASE_URL,
-//   });
-  
-//   res.statusCode = 200;
-//   res.setHeader('Content-Type', 'text/plain');
-//   client.connect()
-//     .then(() => {
-//         const query = {
-//             text: 'INSERT INTO hellotable (name) VALUES ($1)',
-//             values: ['Inserting into the db works!']
-//         }
-
-//         return client.query(query)
-//     })
-//     .then(() => client.query('SELECT * FROM hellotable'))
-//     .then((result) => {
-//       res.end(`${result.rows[1].name}\n`);
-//       client.end();
-//     })
-//     .catch((err) => {
-//       res.end(err.toString());
-//       client.end();
-//     });
-// });
-// server.listen(PORT, () => {
-//   console.log(`Server running on ${PORT}`);
-// });
