@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
+const cors = require('cors');
+
 const PORT = process.env.PORT || 5000
 
 const userHandleExports = require('./handlers/UserHandler');
@@ -18,6 +20,8 @@ app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
+
+app.use(cors());
 
 app.get('/', middleware.checkToken, userHandler.index);
 
