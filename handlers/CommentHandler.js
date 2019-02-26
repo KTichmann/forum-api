@@ -23,7 +23,7 @@ class CommentHandler{
             .then(result => res.json({
                 success: true,
                 message: 'comments fetched successfully',
-                data: result
+                data: result.rows
             }))
             .catch(error => res.json({
                 success: false,
