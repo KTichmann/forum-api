@@ -42,6 +42,8 @@ app.post('/posts/edit', middleware.checkToken, postHandler.editPost);
 app.delete('/posts/delete', middleware.checkToken, postHandler.deletePost);
 
 //Comment-related routes
+app.get('/comments', commentHandler.listAllComments);
+
 app.get('/comments/:id', commentHandler.listComments);
 
 app.post('/comments/create', middleware.checkToken, commentHandler.createComment);
