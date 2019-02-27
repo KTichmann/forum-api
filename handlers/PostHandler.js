@@ -1,4 +1,3 @@
-const md5        = require('md5');
 const jwt        = require('jsonwebtoken');
 const { Client } = require('pg');
 const { DATABASE_URL, SECRET } = process.env;

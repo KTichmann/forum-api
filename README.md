@@ -1,14 +1,14 @@
 #Forum API
 
-##Notes:
+## Notes:
 1. Authentication with jwt through the route /authenticate - tokens last for 24 hours - middleware to check token authenticity- then send back response - add middleware to all protected pages on the site / forum
 
-###Users:
+### Users:
 Users consist of:
 * USERNAME
 * PASSWORD (saved as a hash in the database)
 
-###Posts:
+### Posts:
 Posts consist of:
  * USERNAME The user that created the post
  * POST The post content
@@ -23,7 +23,7 @@ Posts consist of:
  - delete any posts they created
  - edit any posts they created
 
-###Comments:
+### Comments:
 Comments consist of:
 * Comment_id
 * Comment data - comment
@@ -37,6 +37,20 @@ Comments consist of:
  - Add a comment to a post
  - Edit any of their comments
  - Delete any of their comments
+
+### Likes
+
+Likes consist of:
+* type of like - post or comment
+* username of liker
+* id of liked post/comment
+
+Logged out users have the ability to:
+- view a list of likes for every post/comment
+
+Logged in users have the ability to:
+- Add a like to a post/comment
+- Remove a like from a post/comment
 
 .env with local db route & secret key for encryption
 

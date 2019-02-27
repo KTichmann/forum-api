@@ -14,6 +14,9 @@ const postHandler = postHandlerExports.postHandler;
 const commentHandlerExports = require('./handlers/CommentHandler');
 const commentHandler = commentHandlerExports.commentHandler;
 
+const likeHandlerExports = require('./handlers/LikeHandler');
+const likeHandler = likeHandlerExports.likeHandler;
+
 const middleware = require('./middleware');
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
@@ -23,7 +26,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 
 app.use(cors());
 
-app.get('/', middleware.checkToken, userHandler.index);
+// app.get('/', userHandler.index);
 
 //User-related routes
 app.post('/user/sign-up', userHandler.signUp);
@@ -49,6 +52,16 @@ app.post('/comments/create', middleware.checkToken, commentHandler.createComment
 app.post('/comments/edit', middleware.checkToken, commentHandler.editComment);
 
 app.delete('/comments/delete', middleware.checkToken, commentHandler.deleteComment);
+
+//Like-related routes
+
+app.get('/likes/posts', (req, res) => likeHandler.countLikes(req, res, 'post'));
+
+app.get('/likes/comments', (req, res) => likeHandler.countLikes(req, res, 'comment'));
+
+app.post('/likes/add', middleware.checkToken, likeHandler.addLike);
+
+app.post('/likes/remove', middleware.checkToken, likeHandler.removeLike);
 
 //Spin up the server
 app.listen(process.env.PORT, () => {
