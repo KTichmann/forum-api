@@ -18,6 +18,19 @@ class CommentHandler{
         this.editComment = this.editComment.bind(this);
     }
 
+    listAllComments(req, res){
+        client.query('SELECT * FROM comments')
+            .then(result => res.json({
+                success: true,
+                message: 'comments fetched successfully',
+                data: result.rows
+            }))
+            .catch(error => res.json({
+                success: false,
+                message: 'error fetching comments'
+            }))
+    }
+
     listComments(req, res){
         const postId = req.params.id;
         if(!postId){
