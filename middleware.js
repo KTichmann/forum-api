@@ -16,7 +16,7 @@ let checkToken = (req, res, next) => {
                     message: 'Invalid Token'
                 });
             } else {
-                req.decoded = decoded;
+                req.decoded = decoded.username;
                 next();
             }
         });

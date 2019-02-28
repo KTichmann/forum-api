@@ -70,7 +70,8 @@ class PostHandler{
                 if(result.rows[0] == undefined){
                     res.json({
                         success: false,
-                        message: 'username not found'
+                        message: 'username not found',
+                        data: req.decoded
                     })
                 } else {
                     //Add the post to the database
