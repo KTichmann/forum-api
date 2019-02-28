@@ -16,7 +16,7 @@ class LikeHandler{
     }
 
     addLike(req, res){
-        let username = this.getUsername(req);
+        let username = req.decoded;
         let type = req.body.type;
         let id = req.body.id;
         let testQuery;
@@ -88,7 +88,7 @@ class LikeHandler{
     }
 
     removeLike(req, res){
-        const username = this.getUsername(req);
+        const username = req.decoded;
         const id = req.body.id;
         const type = req.body.type;
 
@@ -129,21 +129,6 @@ class LikeHandler{
             message: 'error retrieving likes',
             data: error
         }))
-    }
-
-    getUsername(req){
-        let token = req.headers['x-access-token'] || req.headers['authorization'];
-
-        if (token.startsWith('Bearer ')){
-            //remove bearer from string
-            token = token.slice(7, token.length);
-        }
-
-        const username = jwt.verify(token, SECRET, (err, decoded) => {
-            return decoded.username;
-        });
-
-        return username;
     }
 
     checkParams(res, type, id){

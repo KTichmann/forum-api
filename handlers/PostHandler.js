@@ -52,7 +52,7 @@ class PostHandler{
                 message: 'title cannot be empty'
             })
         }
-        const username = this.getUsername(req);
+        const username = req.decoded;
         const post = req.body.post;
         const title = req.body.title;
         //Make sure the username is in the users table
@@ -95,7 +95,7 @@ class PostHandler{
     }
 
     editPost(req, res){
-        const username = this.getUsername(req);
+        const username = req.decoded;
         const post = req.body.post;
         const title = req.body.title;
         const postID = req.body.id;
@@ -146,7 +146,7 @@ class PostHandler{
     }
 
     deletePost(req,res) {
-        const username = this.getUsername(req);
+        const username = req.decoded;
         const id = req.body.id;
         //Make sure that the user that created the post is the one trying to delete it
         const usernameQuery = {
@@ -190,23 +190,6 @@ class PostHandler{
                 })
             })
     }
-    getUsername(req){
-        let token = req.headers['x-access-token'] || req.headers['authorization'];
-
-        if (token.startsWith('Bearer ')){
-            //remove bearer from string
-            token = token.slice(7, token.length);
-        }
-
-        const username = jwt.verify(token, SECRET, (err, decoded) => {
-            return decoded.username;
-        });
-
-        return username;
-    }
-    //posts --> post_id & username & post & created_at
-    //TODO: Add 'likes' - logged in users can like a post etc.
-    //Users can only like a post once - maybe have a "likes" table --> post_id, number of likes, array of users who liked it...
 };
 
 const postHandler = new PostHandler()

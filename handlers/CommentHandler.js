@@ -39,7 +39,7 @@ class CommentHandler{
                 message: "No post_id to list comments from"
             })
         }
-        const username = this.getUsername(req);
+        const username = req.decoded;
         let postQuery = {
             text: 'SELECT post_id FROM posts WHERE post_id = $1',
             values: [postId]
@@ -79,7 +79,7 @@ class CommentHandler{
     }
 
     createComment(req, res){
-        const username = this.getUsername(req);
+        const username = req.decoded;
         const comment = req.body.comment;
         const post = req.body.post_id;
 
@@ -120,7 +120,7 @@ class CommentHandler{
     }
 
     deleteComment (req, res) {
-        const username = this.getUsername(req);
+        const username = req.decoded;
         const commentId = req.body.id;
 
         //Queries
@@ -167,7 +167,7 @@ class CommentHandler{
     }
 
     editComment (req, res) {
-        const username = this.getUsername(req);
+        const username = req.decoded;
         const commentId = req.body.id;
         const comment = req.body.comment;
 
@@ -210,21 +210,6 @@ class CommentHandler{
                 message: 'error updating comment',
                 data: error 
             }))
-    }
-
-    getUsername(req){
-        let token = req.headers['x-access-token'] || req.headers['authorization'];
-
-        if (token.startsWith('Bearer ')){
-            //remove bearer from string
-            token = token.slice(7, token.length);
-        }
-
-        const username = jwt.verify(token, SECRET, (err, decoded) => {
-            return decoded.username;
-        });
-
-        return username;
     }
 };
 
