@@ -7,11 +7,11 @@ const likeRouter = express.Router();
 
 likeRouter.get('/posts', (req, res) => likeHandler.countLikes(req, res, 'post'));
 
-likeRouter.get('/posts/:id', (req, res) => likeHandler.countLikes(req, res, 'post'));
+likeRouter.get('/posts/:idList', (req, res) => likeHandler.countLikes(req, res, 'post'));
 
 likeRouter.get('/comments', (req, res) => likeHandler.countLikes(req, res, 'comment'));
 
-likeRouter.get('/comments/:id', (req, res) => likeHandler.countLikes(req, res, 'comment'));
+likeRouter.get('/comments/:idList', (req, res) => likeHandler.countLikes(req, res, 'comments'));
 
 likeRouter.post('/add', middleware.checkToken, likeHandler.addLike);
 

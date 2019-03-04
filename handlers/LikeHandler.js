@@ -115,10 +115,20 @@ class LikeHandler{
 
     countLikes(req, res, type){
         let query;
-        if(req.params.id){
+        if(req.params.idList){
+            let IDs = req.params.idList.split('&');
+            IDs.forEach(value => parseInt(value));
+            let queryString = ''
+            for(let i = 2; i < IDs.length + 2; i++){
+                if(i !== IDs.length + 1){
+                    queryString += `id = $${i} OR `
+                } else{
+                    queryString += `id = $${i}`
+                }
+            }
             query = {
-                text: 'SELECT id, COUNT (username) FROM likes WHERE type = $1 and id=$2 GROUP BY id',
-                values: [type, req.params.id]
+                text: `SELECT id, COUNT (username) FROM likes WHERE type = $1 AND (${queryString}) GROUP BY id`,
+                values: [type, ...IDs]
             }
         } else{
             query = {
