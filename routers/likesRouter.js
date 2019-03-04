@@ -11,7 +11,7 @@ likeRouter.get('/posts/:idList', (req, res) => likeHandler.countLikes(req, res, 
 
 likeRouter.get('/comments', (req, res) => likeHandler.countLikes(req, res, 'comment'));
 
-likeRouter.get('/comments/:idList', (req, res) => likeHandler.countLikes(req, res, 'comments'));
+likeRouter.get('/comments/:idList', (req, res) => likeHandler.countLikes(req, res, 'comment'));
 
 likeRouter.post('/add', middleware.checkToken, likeHandler.addLike);
 
