@@ -114,10 +114,19 @@ class LikeHandler{
     }
 
     countLikes(req, res, type){
-        const query = {
-            text: 'SELECT id, COUNT (username) FROM likes WHERE type = $1 GROUP BY id',
-            values: [type]
+        let query;
+        if(req.params.id){
+            query = {
+                text: 'SELECT id, COUNT (username) FROM likes WHERE type = $1 and id=$2',
+                values: [type, req.params.id]
+            }
+        } else{
+            query = {
+                text: 'SELECT id, COUNT (username) FROM likes WHERE type = $1 GROUP BY id',
+                values: [type]
+            }
         }
+
         client.query(query)
         .then(result => res.json({
             success: true,
