@@ -117,7 +117,7 @@ class LikeHandler{
         let query;
         if(req.params.id){
             query = {
-                text: 'SELECT id, COUNT (username) FROM likes WHERE type = $1 and id=$2',
+                text: 'SELECT id, COUNT (username) FROM likes WHERE type = $1 and id=$2 GROUP BY id',
                 values: [type, req.params.id]
             }
         } else{
